@@ -5,7 +5,7 @@ return [
     'components' => [
         // Commit test values to git. Used by GitHub actions.
         'db' => [
-            'dsn' => 'mysql:host=localhost:32574;dbname=wikiclimb_test',
+            'dsn' => 'mysql:host=127.0.0.1:33006;dbname=wikiclimb_test',
             'username' => 'root',
             'password' => 'password',
         ],
