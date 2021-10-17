@@ -1,0 +1,11 @@
+#!/bin/bash
+
+directories="api apiv1 backend common console frontend"
+for directory in $directories
+do
+    echo "cleaning $directory directories..."
+    sudo rm -rf ./$directory/web/assets/*
+    sudo rm -rf ./$directory/runtime/*
+    sudo rm -rf ./$directory/tests/_output/*
+done
+

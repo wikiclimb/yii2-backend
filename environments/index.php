@@ -32,6 +32,8 @@ return [
     'Development' => [
         'path' => 'dev',
         'setWritable' => [
+            'apiv1/runtime',
+            'apiv1/web/assets',
             'backend/runtime',
             'backend/web/assets',
             'console/runtime',
@@ -43,6 +45,7 @@ return [
             'yii_test',
         ],
         'setCookieValidationKey' => [
+            'apiv1/config/main-local.php',
             'backend/config/main-local.php',
             'common/config/codeception-local.php',
             'frontend/config/main-local.php',
@@ -51,6 +54,8 @@ return [
     'Production' => [
         'path' => 'prod',
         'setWritable' => [
+            'apiv1/runtime',
+            'apiv1/web/assets',
             'backend/runtime',
             'backend/web/assets',
             'console/runtime',
@@ -61,6 +66,7 @@ return [
             'yii',
         ],
         'setCookieValidationKey' => [
+            'backend/config/main-local.php',
             'backend/config/main-local.php',
             'frontend/config/main-local.php',
         ],
