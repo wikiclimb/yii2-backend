@@ -1,6 +1,6 @@
 <?php
 
-use yii\db\Migration;
+use console\db\Migration;
 
 /**
  * Class m211017_161634_add_blameable_to_user_table
@@ -14,8 +14,7 @@ class m211017_161634_add_blameable_to_user_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn($this->tableName, 'created_by', $this->integer()->after('status'));
-        $this->addColumn($this->tableName, 'updated_by', $this->integer()->after('created_by'));
+        $this->addBlameable('user');
     }
 
     /**
@@ -23,7 +22,6 @@ class m211017_161634_add_blameable_to_user_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn($this->tableName, 'updated_by');
-        $this->dropColumn($this->tableName, 'created_by');
+        $this->dropBlameable('user');
     }
 }
