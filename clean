@@ -1,6 +1,6 @@
 #!/bin/bash
 
-directories="api apiv1 backend common console frontend"
+directories="apiv1 backend common console frontend"
 for directory in $directories
 do
     echo "cleaning $directory directories..."

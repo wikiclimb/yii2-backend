@@ -71,4 +71,24 @@ return [
             'frontend/config/main-local.php',
         ],
     ],
+    'Test' => [
+        'path' => 'test',
+        'setWritable' => [
+            'apiv1/runtime',
+            'apiv1/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+        ],
+        'setExecutable' => [
+            'yii',
+        ],
+        'setCookieValidationKey' => [
+            'backend/config/main-local.php',
+            'backend/config/main-local.php',
+            'frontend/config/main-local.php',
+        ],
+    ],
 ];

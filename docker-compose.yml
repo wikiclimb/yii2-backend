@@ -2,37 +2,91 @@ version: '3.2'
 
 services:
 
-  frontend:
-    build: frontend
+  apiv1:
+    build: apiv1
     ports:
-      - 20080:80
+      - "22080:80"
     volumes:
       # Re-use local composer cache via host-volume
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       # Mount source-code for development
       - ./:/app
+    depends_on:
+      - mariadb
+      - mariadbtest
+    networks:
+      - wkc
+
+  frontend:
+    build: frontend
+    ports:
+      - "20080:80"
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    depends_on:
+      - mariadb
+      - mariadbtest
+    networks:
+      - wkc
 
   backend:
     build: backend
     ports:
-      - 21080:80
+      - "21080:80"
     volumes:
       # Re-use local composer cache via host-volume
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       # Mount source-code for development
       - ./:/app
+    depends_on:
+      - mariadb
+      - mariadbtest
+    networks:
+      - wkc
 
-  mysql:
-    image: mysql:5.7
+  wkcdb:
+    image: mariadb:10.6.4
+    ports:
+      - "33007:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_DATABASE=yii2advanced
-      - MYSQL_USER=yii2advanced
-      - MYSQL_PASSWORD=secret
+      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_DATABASE=wikiclimb
+      - MARIADB_USER=wikiclimb_user
+      - MARIADB_PASSWORD=password
+    networks:
+      wkc:
+        aliases:
+          - wkcdb
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  #pgsql:
-  #  image: postgres:9.5
-  #  environment:
-  #    - POSTGRES_DB=yii2advanced
-  #    - POSTGRES_USER=yii2advanced
-  #    - POSTGRES_PASSWORD=secret
+  wkcdbtest:
+    image: mariadb:10.6.4
+    ports:
+      - "33006:3306"
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_DATABASE=wikiclimb_test
+      - MARIADB_USER=wikiclimb_test_user
+      - MARIADB_PASSWORD=password
+    networks:
+      wkc:
+        aliases:
+          - wkcdbtest
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+networks:
+  wkc:
+    driver: bridge
+#    attachable: true

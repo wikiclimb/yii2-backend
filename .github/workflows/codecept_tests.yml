@@ -3,28 +3,33 @@ on: [ push, pull_request ]
 jobs:
   codecept-tests:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mariadb:latest
-        env:
-          MARIADB_ROOT_PASSWORD: password
-        ports:
-          - 33006:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v2
       - name: Init environment
-        run: php init --env=Development --overwrite=All
+        run: php init --env=Test --overwrite=All
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress
-      - name: Verify MySQL connection from host
+      - name: Start services
+        run: docker-compose up -d
+      - name: Check containers immediately
+        run: docker ps -a
+      - name: Wait for slow process
+        run: sleep 5
+      - name: Check containers after 5 seconds
+        run: docker ps -a
+      - name: Wait for slow process
+        run: sleep 30
+      - name: Check containers after 35 seconds
+        run: docker ps -a
+      - name: Verify persistent database connection from host
         run: |
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port 33006 --protocol=tcp -uroot -ppassword -e "CREATE DATABASE wikiclimb_test"
-          mysql --host 127.0.0.1 --port 33006 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port 33007 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
+      - name: Verify test database connection from host
+        run: mysql --host 127.0.0.1 --port 33006 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
       - name: Migrate database
         run: ./yii_test migrate --interactive=0
-#      - name: Wait for slow process
-#        run: sleep 30
       - name: Execute tests
         run: vendor/bin/codecept run
+      - name: Clean up services
+        run: docker-compose down

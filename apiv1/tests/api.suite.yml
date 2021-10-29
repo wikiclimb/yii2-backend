@@ -1,0 +1,9 @@
+suite_namespace: api\tests\api
+actor: ApiTester
+modules:
+  enabled:
+    - REST:
+        url: http://localhost:22080/index-test.php/
+        depends: [PhpBrowser, Yii2]
+  config:
+    - Yii2
