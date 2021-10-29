@@ -1,56 +1,11 @@
-version: '3.2'
+version: '3.9'
 
 services:
-
-  apiv1:
-    build: apiv1
-    ports:
-      - "22080:80"
-    volumes:
-      # Re-use local composer cache via host-volume
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
-      - ./:/app
-    depends_on:
-      - mariadb
-      - mariadbtest
-    networks:
-      - wkc
-
-  frontend:
-    build: frontend
-    ports:
-      - "20080:80"
-    volumes:
-      # Re-use local composer cache via host-volume
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
-      - ./:/app
-    depends_on:
-      - mariadb
-      - mariadbtest
-    networks:
-      - wkc
-
-  backend:
-    build: backend
-    ports:
-      - "21080:80"
-    volumes:
-      # Re-use local composer cache via host-volume
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      # Mount source-code for development
-      - ./:/app
-    depends_on:
-      - mariadb
-      - mariadbtest
-    networks:
-      - wkc
-
   wkcdb:
     image: mariadb:10.6.4
     ports:
       - "33007:3306"
+    restart: always
     environment:
       - MARIADB_ROOT_PASSWORD=password
       - MARIADB_DATABASE=wikiclimb
@@ -70,6 +25,7 @@ services:
     image: mariadb:10.6.4
     ports:
       - "33006:3306"
+    restart: always
     environment:
       - MARIADB_ROOT_PASSWORD=password
       - MARIADB_DATABASE=wikiclimb_test
@@ -85,6 +41,50 @@ services:
       timeout: 5s
       retries: 5
 
+  apiv1:
+    build: apiv1
+    ports:
+      - "22080:80"
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    depends_on:
+      - wkcdb
+      - wkcdbtest
+    networks:
+      - wkc
+
+  frontend:
+    build: frontend
+    ports:
+      - "20080:80"
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    depends_on:
+      - wkcdb
+      - wkcdbtest
+    networks:
+      - wkc
+
+  backend:
+    build: backend
+    ports:
+      - "21080:80"
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    depends_on:
+      - wkcdb
+      - wkcdbtest
+    networks:
+      - wkc
 
 networks:
   wkc:
