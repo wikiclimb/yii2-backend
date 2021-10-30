@@ -5,7 +5,6 @@ namespace common\models;
 use JetBrains\PhpStorm\Pure;
 use Yii;
 use yii\base\Exception;
-use yii\base\NotSupportedException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -20,13 +19,15 @@ use yii\web\IdentityInterface;
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
+ * @property string $access_token
  * @property string $auth_key
  * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property integer $created_at [int(11)]
+ * @property integer $updated_at [int(11)]
  * @property-read string $authKey
  * @property string $password write-only password
  * @property int $created_by [int(11)]
+ * @property-read null|string $accessToken
  * @property int $updated_by [int(11)]
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -34,7 +35,6 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
-
 
     /**
      * {@inheritdoc}
@@ -156,6 +156,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function getAuthKey(): ?string
     {
         return $this->auth_key;
+    }
+
+    public function getAccessToken(): ?string
+    {
+        return $this->access_token;
     }
 
     /**

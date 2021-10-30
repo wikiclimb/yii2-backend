@@ -106,13 +106,11 @@ class m211024_072707_create_rbac_tables extends Migration
             'CASCADE',
             'CASCADE',
         );
-        $this->addTimeAndBlame($tableName);
     }
 
     private function dropItemChildrenTable()
     {
         $tableName= 'auth_item_child';
-        $this->dropTimeAndBlame($tableName);
         $this->dropTable($tableName);
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-$roles = ['admin',];
+$roles = ['admin','user','guest',];
 
 $permissions = [
     'createUser', 'listUsers', 'viewUser', 'updateUser', 'deleteUser',
@@ -31,5 +31,13 @@ foreach ($permissions as $permission) {
 }
 
 return array_merge($items, [
-    // Rules
+    [
+        'name' => 'appUserIsRequestedUser',
+        'type' => 2,
+        'description' => 'Check if requested user is requesting user',
+        'rule_name' => 'appUserIsRequestedUser',
+        'data' => null,
+        'created_at' => 1635576338,
+        'updated_at' => 1635576338
+    ],
 ]);

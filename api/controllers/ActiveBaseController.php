@@ -41,7 +41,7 @@ abstract class ActiveBaseController extends ActiveController
             'class' => HttpBearerAuth::class,
         ];
         // avoid authentication on CORS-pre-flight requests (HTTP OPTIONS method)
-        $behaviors['authenticator']['except'] = ['options','index'];
+        $behaviors['authenticator']['except'] = ['options',];
         return $behaviors;
     }
 
