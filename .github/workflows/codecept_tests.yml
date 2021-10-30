@@ -13,6 +13,10 @@ jobs:
         run: docker-compose up -d
       - name: Check containers health
         run: docker ps -a
+      - name: Wait for containers
+        run: sleep 10
+      - name: Check containers health after delay
+        run: docker ps -a
       - name: Verify persistent database connection from host
         run: |
           sudo apt-get install -y mysql-client
