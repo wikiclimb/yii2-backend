@@ -2,6 +2,9 @@
 
 namespace common\tests\unit\models;
 
+use Codeception\Test\Unit;
+use common\fixtures\AuthFixture;
+use common\tests\UnitTester;
 use Yii;
 use common\models\LoginForm;
 use common\fixtures\UserFixture;
@@ -9,24 +12,21 @@ use common\fixtures\UserFixture;
 /**
  * Login form test
  */
-class LoginFormTest extends \Codeception\Test\Unit
+class LoginFormTest extends Unit
 {
     /**
-     * @var \common\tests\UnitTester
+     * @var UnitTester
      */
-    protected $tester;
+    protected UnitTester $tester;
 
 
     /**
      * @return array
      */
-    public function _fixtures()
+    public function _fixtures(): array
     {
         return [
-            'user' => [
-                'class' => UserFixture::className(),
-                'dataFile' => codecept_data_dir() . 'user.php'
-            ]
+            AuthFixture::class,
         ];
     }
 
