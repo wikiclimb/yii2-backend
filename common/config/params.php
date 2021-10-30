@@ -6,4 +6,5 @@ return [
     'senderName' => 'Example.com mailer',
     'user.passwordResetTokenExpire' => 3600,
     'user.passwordMinLength' => 8,
+    'i18n_languages' => ['de', 'en', 'es', 'hi', 'id-ID', 'jp', 'ko', 'pt', 'ru', 'zh',],
 ];
