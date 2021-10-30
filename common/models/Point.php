@@ -11,6 +11,7 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "point".
  *
+ * @property int $id
  * @property float $lat
  * @property float $lng
  * @property float|null $elevation
@@ -21,6 +22,7 @@ use yii\db\ActiveRecord;
  * @property int|null $updated_by
  *
  * @property User $createdBy
+ * @property Node[] $nodes
  * @property User $updatedBy
  */
 class Point extends ActiveRecord
@@ -64,6 +66,7 @@ class Point extends ActiveRecord
     public function attributeLabels(): array
     {
         return [
+            'id' => Yii::t('app', 'ID'),
             'lat' => Yii::t('app', 'Lat'),
             'lng' => Yii::t('app', 'Lng'),
             'elevation' => Yii::t('app', 'Elevation'),
@@ -73,6 +76,16 @@ class Point extends ActiveRecord
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
+    }
+
+    /**
+     * Gets query for [[Nodes]].
+     *
+     * @return ActiveQuery
+     */
+    public function getNodes(): ActiveQuery
+    {
+        return $this->hasMany(Node::class, ['point_id' => 'id']);
     }
 
     /**

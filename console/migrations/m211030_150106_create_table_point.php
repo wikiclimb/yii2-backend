@@ -16,6 +16,7 @@ class m211030_150106_create_table_point extends Migration
     {
         $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
         $this->createTable($this->tableName, [
+            'id' => $this->primaryKey()->unsigned(),
             'lat' => $this->decimal(10, 8)->notNull(),
             'lng' => $this->decimal(11, 8)->notNull(),
             'elevation' => $this->decimal(7, 2),
