@@ -12,7 +12,7 @@ $params = array_merge(
 $routes = require __DIR__ . '/routes.php';
 
 return [
-    'id' => 'wikiclimb-backend-apiv1',
+    'id' => 'wikiclimb-backend-api-v1',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'apiv1\controllers',

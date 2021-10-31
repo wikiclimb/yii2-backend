@@ -15,7 +15,7 @@ use yii\web\ForbiddenHttpException;
 abstract class ActiveBaseController extends ActiveController
 {
     // Allow all methods by default
-    protected array $_verbs = ['GET','POST','PATCH','PUT','OPTIONS','DELETE'];
+    protected array $_verbs = ['GET', 'POST', 'PATCH', 'PUT', 'OPTIONS', 'DELETE'];
 
     /**
      * @return array
@@ -31,7 +31,7 @@ abstract class ActiveBaseController extends ActiveController
             'cors' => [
                 'Origin' => ['*'],
                 'Access-Control-Request-Method' => $this->_verbs,
-                'Access-Control-Allow-Headers' => ['content-type','authorization'],
+                'Access-Control-Allow-Headers' => ['content-type', 'authorization'],
                 'Access-Control-Request-Headers' => ['*'],
                 'Access-Control-Expose-Headers' => ['Link', 'X-Pagination-Total-Count']
             ],
@@ -57,7 +57,7 @@ abstract class ActiveBaseController extends ActiveController
         $className = str_replace('Controller', '',
             substr(strrchr(get_class($this), '\\'), 1));
         $permissionName = $action === 'index' ? "list$className" . 's' : $action . $className;
-        if (!Yii::$app->user->can($permissionName)) {
+        if (!Yii::$app->user->can($permissionName, ['modelId' => $model?->id])) {
             throw new ForbiddenHttpException(
                 Yii::t('app',
                     'You are not allowed to {action} {resource}.',

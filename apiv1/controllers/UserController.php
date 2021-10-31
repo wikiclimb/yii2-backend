@@ -13,9 +13,8 @@ use yii\web\ServerErrorHttpException;
 
 /**
  * Class UserController
- *
- * @package api\controllers
- * @author Raul Sauco
+ * @package apiv1\controllers
+ * @author Raul Sauco <sauco.raul@gmail.com>
  */
 class UserController extends ActiveBaseController
 {
@@ -104,9 +103,12 @@ class UserController extends ActiveBaseController
 
     /**
      * Custom update action.
+     * @param $id
      * @return User
-     * @throws ServerErrorHttpException
      * @throws Exception
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * @throws ServerErrorHttpException
      */
     public function actionUpdate($id): User
     {

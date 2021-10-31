@@ -1,8 +1,9 @@
 <?php
 
-$roles = ['admin','user','guest',];
+$roles = ['admin', 'user', 'guest',];
 
 $permissions = [
+    'createNode', 'listNodes', 'viewNode', 'updateNode', 'deleteNode',
     'createUser', 'listUsers', 'viewUser', 'updateUser', 'deleteUser',
 ];
 

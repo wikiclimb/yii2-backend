@@ -6,9 +6,20 @@ use common\models\NodeType;
 use yii\base\InvalidConfigException;
 use yii\test\ActiveFixture;
 
+/**
+ * Class NodeTypeFixture
+ * @package common\fixtures
+ * @author Raul Sauco <sauco.raul@gmail.com>
+ */
 class NodeTypeFixture extends ActiveFixture
 {
     public $modelClass = NodeType::class;
+
+    public $depends = [
+        I18nStringFixture::class,
+        I18nTextFixture::class,
+        AuthFixture::class,
+    ];
 
     /**
      * @throws InvalidConfigException

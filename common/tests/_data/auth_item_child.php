@@ -1,11 +1,13 @@
 <?php
 
 $adminItems = [
+    'updateNode', 'deleteNode',
     'createUser', 'listUsers', 'viewUser', 'updateUser', 'deleteUser'
 ];
 
 $userItems = [
     'appUserIsRequestedUser',
+    'createNode', 'listNodes', 'viewNode',
 ];
 
 $items = [];

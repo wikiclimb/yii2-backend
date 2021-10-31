@@ -1,6 +1,7 @@
 <?php
 
-return array_merge([
-    // Add API auth_item_child here
+return array_merge(
+    require dirname(__DIR__, 3)
+        . '/common/tests/_data/auth_item_child.php', [
 
-],require __DIR__ . '/../../../common/tests/_data/auth_item_child.php');
+]);
