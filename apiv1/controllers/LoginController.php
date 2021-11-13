@@ -4,7 +4,9 @@ namespace apiv1\controllers;
 
 use api\controllers\BaseController;
 use common\models\User;
+use JetBrains\PhpStorm\ArrayShape;
 use Yii;
+use yii\web\UnauthorizedHttpException;
 use yii\web\UnprocessableEntityHttpException;
 
 /**
@@ -13,7 +15,7 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class LoginController extends BaseController
 {
-    protected array $_verbs = ['POST','OPTIONS'];
+    protected array $_verbs = ['POST', 'OPTIONS'];
 
     /**
      * @return array
@@ -21,15 +23,16 @@ class LoginController extends BaseController
     public function behaviors(): array
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator']['except'] = ['options','create'];
+        $behaviors['authenticator']['except'] = ['options', 'create'];
         return $behaviors;
     }
 
     /**
      * @return array
      * @throws UnprocessableEntityHttpException
+     * @throws UnauthorizedHttpException
      */
-    public function actionCreate(): array
+    #[ArrayShape(['id' => "int", 'username' => "string", 'token' => "string"])] public function actionCreate(): array
     {
         $p = $this->request->post('password');
         $u = $this->request->post('username');
@@ -41,18 +44,15 @@ class LoginController extends BaseController
         }
         if (($user = User::findByUserName($u)) !== null && $user->validatePassword($p)) {
             return [
-                'error' => false,
-                'message' => 'OK',
-                'credentials' => [
-                    'username' => $user->username,
-                    'accessToken' => $user->access_token
-                ],
+                'id' => $user->id,
+                'username' => $user->username,
+                'token' => $user->access_token
+
             ];
         }
         // Unsuccessful login. Do not offer details
-        return [
-            'error' => true,
-            'message' => Yii::t('app', 'Authentication Failure'),
-        ];
+        throw new UnauthorizedHttpException(
+            Yii::t('app', 'Authentication Failure')
+        );
     }
 }

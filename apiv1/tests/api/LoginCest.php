@@ -23,12 +23,9 @@ class LoginCest
         $I->expectTo('see a successful response');
         $I->seeResponseCodeIs(200);
         $I->seeResponseContainsJson([
-            'error' => false,
-            'message' => 'OK',
-            'credentials' => [
-                'username' => 'user-1',
-                'accessToken' => 'user-1-access-token',
-            ],
+            'id' => 1,
+            'username' => 'user-1',
+            'token' => 'user-1-access-token',
         ]);
     }
 
@@ -38,10 +35,9 @@ class LoginCest
             'username' => 'user-1',
             'password' => 'wrong_password',
         ]);
-        $I->expectTo('see a successful response');
-        $I->seeResponseCodeIs(200);
+        $I->expectTo('see a 401 response');
+        $I->seeResponseCodeIs(401);
         $I->seeResponseContainsJson([
-            'error' => true,
             'message' => 'Authentication Failure',
         ]);
     }
