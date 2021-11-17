@@ -5,6 +5,7 @@ namespace api\test\api;
 use apiv1\tests\ApiTester;
 use common\fixtures\AuthFixture;
 use common\fixtures\NodeFixture;
+use common\fixtures\NodeImageFixture;
 use common\fixtures\NodeRatingFixture;
 use common\models\Node;
 
@@ -21,6 +22,7 @@ class NodeCest
             NodeFixture::class,
             AuthFixture::class,
             NodeRatingFixture::class,
+            NodeImageFixture::class,
         ];
     }
 
@@ -73,6 +75,7 @@ class NodeCest
             'id' => 1,
             'node_type_id' => 1,
             'name_id' => 101,
+            'cover_url' => null,
         ]);
     }
 
@@ -88,12 +91,14 @@ class NodeCest
         $I->expectTo('see node-4 data');
         $I->seeResponseContainsJson([
             'id' => 4,
+            'type' => 1,
             'name' => 'node-4-name',
             'description' => 'node-4-description',
             'breadcrumbs' => ['area-1-name', 'area-2-name', 'area-3-name',],
             'node_type_id' => 1,
             'name_id' => 104,
             'rating' => 3.5,
+            'cover_url' => 'image-2.jpg',
         ]);
     }
 

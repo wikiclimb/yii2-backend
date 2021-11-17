@@ -3,6 +3,7 @@
 namespace apiv1\models;
 
 use common\helpers\NodeHelper;
+use common\models\NodeImage;
 
 /**
  * Class Node
@@ -17,6 +18,9 @@ class Node extends \common\models\Node
         $fields['name'] = static function (Node $model) {
             return $model->name->toString();
         };
+        $fields['type'] = static function (Node $model) {
+            return $model->node_type_id;
+        };
         $fields['description'] = static function (Node $model) {
             return $model->description->toString();
         };
@@ -24,7 +28,11 @@ class Node extends \common\models\Node
             return NodeHelper::getNameBreadcrumbs($model);
         };
         $fields['cover_url'] = static function (Node $model) {
-            return '';
+            $nodeImage = NodeImage::findOne([
+                'node_id' => $model->id,
+                'is_cover' => true,
+            ]);
+            return $nodeImage?->image->file_name;
         };
         $fields['rating'] = static function (Node $model) {
             return NodeHelper::getRating($model);
