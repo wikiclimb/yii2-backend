@@ -92,6 +92,17 @@ class I18nText extends ActiveRecord
     }
 
     /**
+     * Return the best fit for a given string based on the current
+     * application language settings.
+     * @return string
+     */
+    public function toString(): string
+    {
+        // TODO use the application current language to return the best match.
+        return $this->default;
+    }
+
+    /**
      * Gets query for [[CreatedBy]].
      *
      * @return ActiveQuery
