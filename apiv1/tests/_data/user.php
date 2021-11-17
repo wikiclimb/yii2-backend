@@ -29,4 +29,13 @@ return [
         'created_at' => '1548675330',
         'updated_at' => '1548675330',
     ],
+    [
+        'username' => 'user-4',
+        'auth_key' => 'user-4-auth-key',
+        'access_token' => 'user-4-access-token',
+        'password_hash' => '$2y$13$CXT0Rkle1EMJ/c1l5bylL.EylfmQ39O5JlHJVFpNn618OUS1HwaIi',
+        'email' => 'user-4@example.com',
+        'created_at' => '1548675330',
+        'updated_at' => '1548675330',
+    ],
 ];

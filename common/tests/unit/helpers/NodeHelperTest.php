@@ -3,7 +3,9 @@
 namespace common\tests\unit\models;
 
 use Codeception\Test\Unit;
+use common\fixtures\AuthFixture;
 use common\fixtures\NodeFixture;
+use common\fixtures\NodeRatingFixture;
 use common\helpers\NodeHelper;
 use common\models\Node;
 
@@ -18,8 +20,9 @@ class NodeHelperTest extends Unit
     public function _fixtures(): array
     {
         return [
-//            AuthFixture::class,
+            AuthFixture::class,
             NodeFixture::class,
+            NodeRatingFixture::class,
         ];
     }
 
@@ -29,5 +32,14 @@ class NodeHelperTest extends Unit
         expect($node)->notNull();
         $breadcrumbs = NodeHelper::getNameBreadcrumbs($node);
         expect($breadcrumbs)->equals(['node-1', 'node-2', 'node-3']);
+    }
+
+    public function testRatingCalculation()
+    {
+        $node = Node::findOne(4);
+        expect($node)->notNull();
+        $rating = NodeHelper::getRating($node);
+        $expected = round((4 + 2 + 3 + 5) / 4.0, 1);
+        expect($rating)->equals($expected);
     }
 }

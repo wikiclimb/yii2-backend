@@ -27,7 +27,7 @@ class Node extends \common\models\Node
             return '';
         };
         $fields['rating'] = static function (Node $model) {
-            return '';
+            return NodeHelper::getRating($model);
         };
         $fields['created_by'] = static function (Node $model) {
             return $model->createdBy?->username ?? '';

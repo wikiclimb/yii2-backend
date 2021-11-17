@@ -24,13 +24,23 @@ return [
         'en' => 'Pitch',
     ],
     [
-        'id' => 100,
+        'id' => 101,
         'default' => 'area-1-name',
         'en' => 'area-1-name',
     ],
     [
-        'id' => 101,
+        'id' => 102,
         'default' => 'area-2-name',
         'en' => 'area-2-name',
+    ],
+    [
+        'id' => 103,
+        'default' => 'area-3-name',
+        'en' => 'area-3-name',
+    ],
+    [
+        'id' => 104,
+        'default' => 'node-4-name',
+        'en' => 'node-4-name',
     ],
 ];

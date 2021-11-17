@@ -5,6 +5,7 @@ namespace api\test\api;
 use apiv1\tests\ApiTester;
 use common\fixtures\AuthFixture;
 use common\fixtures\NodeFixture;
+use common\fixtures\NodeRatingFixture;
 use common\models\Node;
 
 /**
@@ -19,6 +20,7 @@ class NodeCest
         return [
             NodeFixture::class,
             AuthFixture::class,
+            NodeRatingFixture::class,
         ];
     }
 
@@ -35,7 +37,7 @@ class NodeCest
         $I->seeResponseContainsJson([
             'id' => 1,
             'node_type_id' => 1,
-            'name_id' => 100,
+            'name_id' => 101,
         ]);
     }
 
@@ -53,7 +55,7 @@ class NodeCest
         $I->seeResponseContainsJson([
             'id' => 1,
             'node_type_id' => 1,
-            'name_id' => 100,
+            'name_id' => 101,
         ]);
     }
 
@@ -70,7 +72,28 @@ class NodeCest
         $I->seeResponseContainsJson([
             'id' => 1,
             'node_type_id' => 1,
-            'name_id' => 100,
+            'name_id' => 101,
+        ]);
+    }
+
+    public function viewAsGuestShowsCustomFields(ApiTester $I)
+    {
+        $I->amGoingTo('request a node as a guest user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet('nodes/4');
+        $I->expect('a 200 response code');
+        $I->seeResponseCodeIs(200);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('see node-4 data');
+        $I->seeResponseContainsJson([
+            'id' => 4,
+            'name' => 'node-4-name',
+            'description' => 'node-4-description',
+            'breadcrumbs' => ['area-1-name', 'area-2-name', 'area-3-name',],
+            'node_type_id' => 1,
+            'name_id' => 104,
+            'rating' => 3.5,
         ]);
     }
 
@@ -80,7 +103,8 @@ class NodeCest
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPost('nodes', [
             'node_type_id' => Node::TYPE_AREA,
-            'name_id' => 100,
+            'name_id' => 101,
+            'description_id' => 101,
         ]);
         $I->expect('the response to be JSON');
         $I->seeResponseIsJson();
@@ -93,7 +117,8 @@ class NodeCest
     {
         $nodeData = [
             'node_type_id' => Node::TYPE_AREA,
-            'name_id' => 100,
+            'name_id' => 101,
+            'description_id' => 101,
         ];
         $I->amGoingTo('try to create a new node as a guest user');
         $I->haveHttpHeader('Content-Type', 'application/json');
@@ -184,7 +209,7 @@ class NodeCest
         $I->amGoingTo('try to delete a new node as an admin');
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer user-1-access-token');
-        $I->sendDelete('nodes/1');
+        $I->sendDelete('nodes/4');
         $I->expectTo('receive a 204 success (empty) response');
         $I->seeResponseCodeIs(204);
     }

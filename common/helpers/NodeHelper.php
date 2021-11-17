@@ -24,4 +24,16 @@ class NodeHelper
         }
         return $breadcrumbs;
     }
+
+    /**
+     * Get the current rating of a node based on the average of user's votes.
+     * Use this wrapper instead of directly querying the database to help
+     * propagate any future changes.
+     * @param Node $node
+     * @return float
+     */
+    public static function getRating(Node $node): float
+    {
+        return round($node->getNodeRatings()->average('rating'), 1);
+    }
 }

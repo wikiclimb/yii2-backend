@@ -125,6 +125,26 @@ class Node extends ActiveRecord
     }
 
     /**
+     * Gets query for [[NodeImages]].
+     *
+     * @return ActiveQuery
+     */
+    public function getNodeImages(): ActiveQuery
+    {
+        return $this->hasMany(NodeImage::class, ['node_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[NodeRatings]].
+     *
+     * @return ActiveQuery
+     */
+    public function getNodeRatings(): ActiveQuery
+    {
+        return $this->hasMany(NodeRating::class, ['node_id' => 'id']);
+    }
+
+    /**
      * Gets query for [[NodeType]].
      *
      * @return ActiveQuery
@@ -174,4 +194,3 @@ class Node extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 }
-
