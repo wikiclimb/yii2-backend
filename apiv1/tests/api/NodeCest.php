@@ -74,6 +74,7 @@ class NodeCest
         $I->seeResponseContainsJson([
             'id' => 1,
             'node_type_id' => 1,
+            'type' => 'Area',
             'name_id' => 101,
             'cover_url' => null,
         ]);
@@ -91,11 +92,11 @@ class NodeCest
         $I->expectTo('see node-4 data');
         $I->seeResponseContainsJson([
             'id' => 4,
-            'type' => 1,
+            'type' => 'Area',
             'name' => 'node-4-name',
             'description' => 'node-4-description',
             'breadcrumbs' => ['area-1-name', 'area-2-name', 'area-3-name',],
-            'node_type_id' => 1,
+            'node_type_id' => Node::TYPE_AREA,
             'name_id' => 104,
             'rating' => 3.5,
             'cover_url' => 'image-2.jpg',
@@ -108,6 +109,7 @@ class NodeCest
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPost('nodes', [
             'node_type_id' => Node::TYPE_AREA,
+            'type' => 4,
             'name_id' => 101,
             'description_id' => 101,
         ]);
@@ -123,6 +125,7 @@ class NodeCest
         $nodeData = [
             'node_type_id' => Node::TYPE_AREA,
             'name' => 'created-node-name',
+            'type' => 4,
             'description' => 'created-node-description',
         ];
         $I->amGoingTo('try to create a new node as a guest user');
@@ -133,6 +136,7 @@ class NodeCest
         $I->seeResponseIsJson();
         $I->expectTo('receive a 201 created response');
         $I->seeResponseCodeIs(201);
+        $nodeData['type'] = 'Area';
         $I->seeResponseContainsJson($nodeData);
     }
 

@@ -63,15 +63,13 @@ class Node extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['node_type_id', 'parent_id', 'name_id', 'description_id', 'point_id', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
+            [['node_type_id', 'parent_id', 'name_id', 'description_id', 'point_id',], 'integer'],
             [['name_id'], 'required'],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
             [['description_id'], 'exist', 'skipOnError' => true, 'targetClass' => I18nText::class, 'targetAttribute' => ['description_id' => 'id']],
             [['name_id'], 'exist', 'skipOnError' => true, 'targetClass' => I18nString::class, 'targetAttribute' => ['name_id' => 'id']],
             [['node_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => NodeType::class, 'targetAttribute' => ['node_type_id' => 'id']],
             [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Node::class, 'targetAttribute' => ['parent_id' => 'id']],
             [['point_id'], 'exist', 'skipOnError' => true, 'targetClass' => Point::class, 'targetAttribute' => ['point_id' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 

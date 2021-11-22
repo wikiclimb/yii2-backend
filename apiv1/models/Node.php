@@ -19,7 +19,7 @@ class Node extends \common\models\Node
             return $model->name->toString();
         };
         $fields['type'] = static function (Node $model) {
-            return $model->node_type_id;
+            return $model->nodeType?->name?->default;
         };
         $fields['description'] = static function (Node $model) {
             return $model->description->toString();
