@@ -122,8 +122,8 @@ class NodeCest
     {
         $nodeData = [
             'node_type_id' => Node::TYPE_AREA,
-            'name_id' => 101,
-            'description_id' => 101,
+            'name' => 'created-node-name',
+            'description' => 'created-node-description',
         ];
         $I->amGoingTo('try to create a new node as a guest user');
         $I->haveHttpHeader('Content-Type', 'application/json');
@@ -133,6 +133,43 @@ class NodeCest
         $I->seeResponseIsJson();
         $I->expectTo('receive a 201 created response');
         $I->seeResponseCodeIs(201);
+        $I->seeResponseContainsJson($nodeData);
+    }
+
+    public function createAsUserWithEmptyName(ApiTester $I)
+    {
+        $nodeData = [
+            'node_type_id' => Node::TYPE_AREA,
+//            'name' => 'created-node-name',
+            'description' => 'created-node-description',
+        ];
+        $I->amGoingTo('try to create a new node as a guest user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendPost('nodes', $nodeData);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('receive a 422 response');
+        $I->seeResponseCodeIs(422);
+        $I->seeResponseContains('Name value is not valid.');
+    }
+
+    public function createAsUserWithEmptyDescription(ApiTester $I)
+    {
+        $nodeData = [
+            'node_type_id' => Node::TYPE_AREA,
+            'name' => 'created-node-name',
+//            'description' => 'created-node-description',
+        ];
+        $I->amGoingTo('try to create a new node as a guest user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendPost('nodes', $nodeData);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('receive a 201 created response');
+        $I->seeResponseCodeIs(201);
+        $nodeData['description'] = 'This descripton needs to be updated';
         $I->seeResponseContainsJson($nodeData);
     }
 

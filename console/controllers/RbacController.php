@@ -44,6 +44,35 @@ class RbacController extends Controller
             "%G» Adding permissions%n"));
 
         /* ********************************************************************
+         * ****************************** Node ********************************
+         * ********************************************************************/
+        Console::output('  » Node');
+        $createNode = $auth->createPermission('createNode');
+        $createNode->description = 'Create a node';
+        $auth->add($createNode);
+        $auth->addChild($userRole, $createNode);
+
+        $updateNode = $auth->createPermission('updateNode');
+        $updateNode->description = 'Update a node';
+        $auth->add($updateNode);
+        $auth->addChild($userRole, $updateNode);
+
+        $viewNode = $auth->createPermission('viewNode');
+        $viewNode->description = 'View a single node details';
+        $auth->add($viewNode);
+        $auth->addChild($guestRole, $viewNode);
+
+        $listNodes = $auth->createPermission('listNodes');
+        $listNodes->description = 'View a list of nodes';
+        $auth->add($listNodes);
+        $auth->addChild($guestRole, $listNodes);
+
+        $deleteNode = $auth->createPermission('deleteNode');
+        $deleteNode->description = 'Delete a node';
+        $auth->add($deleteNode);
+        $auth->addChild($userRole, $deleteNode);
+
+        /* ********************************************************************
          * ****************************** User ********************************
          * ********************************************************************/
         Console::output('  » User');

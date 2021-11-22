@@ -1,6 +1,6 @@
 <?php
 
-namespace common\tests\unit\models;
+namespace common\tests\unit\helpers;
 
 use Codeception\Test\Unit;
 use common\fixtures\AuthFixture;

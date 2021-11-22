@@ -4,8 +4,14 @@ namespace apiv1\controllers;
 
 use api\controllers\ActiveBaseController;
 use apiv1\models\Node;
+use common\helpers\I18nStringHelper;
+use common\helpers\I18nTextHelper;
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\helpers\Url;
 use yii\web\ForbiddenHttpException;
+use yii\web\ServerErrorHttpException;
+use yii\web\UnprocessableEntityHttpException;
 
 /**
  * Class NodeController
@@ -15,6 +21,13 @@ use yii\web\ForbiddenHttpException;
 class NodeController extends ActiveBaseController
 {
     public $modelClass = Node::class;
+
+    public function actions(): array
+    {
+        $actions = parent::actions();
+        unset($actions['create']);
+        return $actions;
+    }
 
     /**
      * @return array
@@ -43,5 +56,47 @@ class NodeController extends ActiveBaseController
         throw new ForbiddenHttpException(
             Yii::t('yii', 'You are not allowed to perform this action.')
         );
+    }
+
+    /**
+     * @return Node
+     * @throws ForbiddenHttpException
+     * @throws InvalidConfigException
+     * @throws ServerErrorHttpException
+     * @throws UnprocessableEntityHttpException
+     */
+    public function actionCreate(): Node
+    {
+        if (!Yii::$app->user->can('createNode')) {
+            throw new ForbiddenHttpException(
+                Yii::t('yii', 'You are not allowed to perform this action.')
+            );
+        }
+        $params = Yii::$app->getRequest()->getBodyParams();
+        // Default scenario.
+        $model = new $this->modelClass;
+        if (($model->name_id = I18nStringHelper::parseToModel(
+                $params['name'] ?? '')?->id) === null) {
+            throw new UnprocessableEntityHttpException(
+                'Name value is not valid.'
+            );
+        }
+        if (($model->description_id = I18nTextHelper::parseToModel(
+                $params['description'] ?? '')?->id) === null) {
+            throw new UnprocessableEntityHttpException(
+                'Description value is not valid.'
+            );
+        }
+        // Mass load some parameters from the request.
+        $model->load($params, '');
+        if ($model->save()) {
+            $response = Yii::$app->getResponse();
+            $response->setStatusCode(201);
+            $id = implode(',', $model->getPrimaryKey(true));
+            $response->getHeaders()->set('Location', Url::toRoute(['node/view', 'id' => $model->id], true));
+        } elseif (!$model->hasErrors()) {
+            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
+        }
+        return $model;
     }
 }
