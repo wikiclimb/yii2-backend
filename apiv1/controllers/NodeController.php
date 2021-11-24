@@ -3,13 +3,16 @@
 namespace apiv1\controllers;
 
 use api\controllers\ActiveBaseController;
+use apiv1\helpers\NodeHelper;
 use apiv1\models\Node;
 use common\helpers\I18nStringHelper;
 use common\helpers\I18nTextHelper;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\Exception;
 use yii\helpers\Url;
 use yii\web\ForbiddenHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -25,7 +28,10 @@ class NodeController extends ActiveBaseController
     public function actions(): array
     {
         $actions = parent::actions();
-        unset($actions['create']);
+        unset(
+            $actions['create'],
+            $actions['update'],
+        );
         return $actions;
     }
 
@@ -98,5 +104,48 @@ class NodeController extends ActiveBaseController
             throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
         }
         return $model;
+    }
+
+    /**
+     * @param int $id
+     * @return Node
+     * @throws ForbiddenHttpException
+     * @throws InvalidConfigException
+     * @throws NotFoundHttpException
+     * @throws ServerErrorHttpException
+     * @throws \Throwable
+     * @throws Exception
+     */
+    public function actionUpdate(int $id): Node
+    {
+        if (!Yii::$app->user->can('updateNode')) {
+            throw new ForbiddenHttpException(
+                Yii::t('yii', 'You are not allowed to perform this action.')
+            );
+        }
+        /** @var Node $model */
+        if (($model = $this->modelClass::findOne($id)) === null) {
+            throw new NotFoundHttpException(
+                Yii::t('app', 'Resource not found.')
+            );
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (NodeHelper::load($model, Yii::$app->getRequest()->getBodyParams())) {
+                $response = Yii::$app->getResponse();
+                $response->setStatusCode(200);
+                $response->getHeaders()->set('Location',
+                    Url::toRoute(['node/view', 'id' => $model->id], true));
+            } elseif (!$model->hasErrors()) {
+                $transaction->rollBack();
+                throw new ServerErrorHttpException(
+                    'Failed to update the object for unknown reason.');
+            }
+            $transaction->commit();
+            return $model;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 }

@@ -191,28 +191,47 @@ class NodeCest
         $I->seeResponseContains('Unauthorized');
     }
 
+    public function update404AsUser(ApiTester $I)
+    {
+        $nodeData = [
+            'id' => 1,
+            'name' => 'area-1-updated-name',
+            'description' => 'area-1-updated-description',
+        ];
+        $I->amGoingTo('try to update node that does not exist');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendPatch('nodes/99999', $nodeData);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('receive a 404 response');
+        $I->seeResponseCodeIs(404);
+    }
+
     public function updateAsUser(ApiTester $I)
     {
         $nodeData = [
-            'node_type_id' => Node::TYPE_ROUTE,
-            'name_id' => 101,
+            'id' => 1,
+            'name' => 'area-1-updated-name',
+            'description' => 'area-1-updated-description',
         ];
-        $I->amGoingTo('try to create a new node as a user');
+        $I->amGoingTo('try to update node as a user');
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
         $I->sendPatch('nodes/1', $nodeData);
         $I->expect('the response to be JSON');
         $I->seeResponseIsJson();
-        $I->expectTo('receive a 403 forbidden response');
-        $I->seeResponseCodeIs(403);
-        $I->seeResponseContains('Forbidden');
+        $I->expectTo('receive a 200 success response');
+        $I->seeResponseCodeIs(200);
+        $I->seeResponseContainsJson($nodeData);
     }
 
     public function updateAsAdmin(ApiTester $I)
     {
         $nodeData = [
-            'node_type_id' => Node::TYPE_ROUTE,
-            'name_id' => 101,
+            'id' => 1,
+            'name' => 'area-1-updated-name',
+            'description' => 'area-1-updated-description',
         ];
         $I->amGoingTo('try to create a new node as an admin');
         $I->haveHttpHeader('Content-Type', 'application/json');
@@ -242,12 +261,9 @@ class NodeCest
         $I->amGoingTo('try to delete a new node as a user');
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
-        $I->sendDelete('nodes/1');
-        $I->expect('the response to be JSON');
-        $I->seeResponseIsJson();
-        $I->expectTo('receive a 403 forbidden response');
-        $I->seeResponseCodeIs(403);
-        $I->seeResponseContains('Forbidden');
+        $I->sendDelete('nodes/4');
+        $I->expectTo('receive a 204 success (empty) response');
+        $I->seeResponseCodeIs(204);
     }
 
     public function deleteAsAdmin(ApiTester $I)
