@@ -43,4 +43,19 @@ return [
         'default' => 'node-4-name',
         'en' => 'node-4-name',
     ],
+    [
+        'id' => 201,
+        'default' => 'image-1-name',
+        'en' => 'image-1-name',
+    ],
+    [
+        'id' => 202,
+        'default' => 'image-2-name',
+        'en' => 'image-2-name',
+    ],
+    [
+        'id' => 203,
+        'default' => 'image-3-name',
+        'en' => 'image-3-name',
+    ],
 ];

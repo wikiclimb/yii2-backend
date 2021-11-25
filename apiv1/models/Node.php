@@ -4,14 +4,33 @@ namespace apiv1\models;
 
 use common\helpers\NodeHelper;
 use common\models\NodeImage;
+use yii\base\InvalidConfigException;
+use yii\db\ActiveQuery;
 
 /**
  * Class Node
  * @package apiv1\models
  * @author Raul Sauco <sauco.raul@gmail.com>
+ *
+ * @property-read ActiveQuery $images
  */
 class Node extends \common\models\Node
 {
+
+
+    /**
+     * Gets query for [[Image]].
+     *
+     * @return ActiveQuery
+     * @throws InvalidConfigException
+     */
+    public function getImages(): ActiveQuery
+    {
+        return $this->hasMany(
+            Image::class, ['id' => 'image_id'])
+            ->viaTable('node_image', ['node_id' => 'id']);
+    }
+
     public function fields(): array
     {
         $fields = parent::fields();
