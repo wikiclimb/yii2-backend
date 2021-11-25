@@ -62,6 +62,9 @@ class Node extends \common\models\Node
         $fields['updated_by'] = static function (Node $model) {
             return $model->updatedBy?->username ?? '';
         };
+        if (YII_DEBUG) {
+            ksort($fields);
+        }
         return $fields;
     }
 }

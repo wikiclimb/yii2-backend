@@ -37,7 +37,7 @@ class ImageCest
                 'file_name' => 'image-1.jpg',
                 'name' => 'image-1-name',
                 'description' => 'image-1-description',
-                'validated' => 1,
+                'validated' => true,
             ],
             [
                 'id' => 2,
@@ -69,11 +69,12 @@ class ImageCest
                 'file_name' => 'image-1.jpg',
                 'name' => 'image-1-name',
                 'description' => 'image-1-description',
-                'validated' => 1,
+                'validated' => true,
             ],
             [
                 'id' => 2,
                 'name' => 'image-2-name',
+                'validated' => true,
             ],
         ]);
         $I->expect('not see images not linked to the node');

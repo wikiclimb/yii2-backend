@@ -14,7 +14,7 @@ class Image extends \common\models\Image
     {
         $fields = parent::fields();
         $fields['name'] = static function (Image $model) {
-            return $model->name->toString();
+            return $model->name?->toString() ?? '';
         };
         $fields['description'] = static function (Image $model) {
             return $model->description?->toString() ?? '';
@@ -25,6 +25,12 @@ class Image extends \common\models\Image
         $fields['updated_by'] = static function (Image $model) {
             return $model->updatedBy?->username ?? '';
         };
+        $fields['validated'] = static function (Image $model) {
+            return (bool)$model->validated;
+        };
+        if (YII_DEBUG) {
+            ksort($fields);
+        }
         return $fields;
     }
 }
