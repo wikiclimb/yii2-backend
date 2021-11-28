@@ -3,6 +3,8 @@ return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
+        '@staticPath' => dirname(__DIR__, 2) . '/static',
+        '@imgPath' => '@staticPath/img',
     ],
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [

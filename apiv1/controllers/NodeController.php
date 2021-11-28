@@ -98,7 +98,6 @@ class NodeController extends ActiveBaseController
         if ($model->save()) {
             $response = Yii::$app->getResponse();
             $response->setStatusCode(201);
-            $id = implode(',', $model->getPrimaryKey(true));
             $response->getHeaders()->set('Location', Url::toRoute(['node/view', 'id' => $model->id], true));
         } elseif (!$model->hasErrors()) {
             throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
