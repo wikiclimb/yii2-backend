@@ -135,18 +135,23 @@ class ImageController extends ActiveBaseController
                 Yii::error($message, __METHOD__);
                 throw new ServerErrorHttpException($message);
             }
-            Yii::debug("Created Image: $image->id", __METHOD__);
-            $images[] = $image;
-            if (isset($node)) {
-                $nodeImage = new NodeImage();
-                $nodeImage->node_id = $node->id;
-                $nodeImage->image_id = $image->id;
-                if (!$nodeImage->save()) {
-                    Yii::error(
-                        "Error linking image $image->id with node $nodeId",
-                        __METHOD__);
-                } else {
-                    Yii::debug("Created NodeImage($nodeId,$image->id)", __METHOD__);
+            if ($image instanceof $this->modelClass) {
+                Yii::debug("Created Image: $image->id", __METHOD__);
+                // Consider any images created by users, not guests, validated.
+                $image->validated = 1;
+                $image->save();
+                $images[] = $image;
+                if (isset($node)) {
+                    $nodeImage = new NodeImage();
+                    $nodeImage->node_id = $node->id;
+                    $nodeImage->image_id = $image->id;
+                    if (!$nodeImage->save()) {
+                        Yii::error(
+                            "Error linking image $image->id with node $nodeId",
+                            __METHOD__);
+                    } else {
+                        Yii::debug("Created NodeImage($nodeId,$image->id)", __METHOD__);
+                    }
                 }
             }
         }
