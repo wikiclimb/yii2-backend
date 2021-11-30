@@ -1,8 +1,4 @@
 <?php
-$params = array_merge(
-    require __DIR__ . '/params.php',
-    require __DIR__ . '/params-local.php'
-);
 
 return [
     'id' => 'app-common-tests',
@@ -19,5 +15,9 @@ return [
             'identityClass' => 'common\models\User',
         ],
     ],
-    'params' => $params,
+    'params' => [
+        'supportEmail' => 'support@wikiclimb.org',
+        'registrationEmail' => 'registration@wikiclimb.org',
+        'user.passwordMinLength' => 8,
+    ],
 ];
