@@ -2,19 +2,19 @@
 
 namespace frontend\controllers;
 
+use common\models\LoginForm;
+use common\models\SignupForm;
+use frontend\models\ContactForm;
+use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResendVerificationEmailForm;
+use frontend\models\ResetPasswordForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use common\models\LoginForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
-use frontend\models\ContactForm;
 
 /**
  * Site controller
@@ -217,8 +217,8 @@ class SiteController extends Controller
      * Verify email address
      *
      * @param string $token
-     * @throws BadRequestHttpException
      * @return yii\web\Response
+     * @throws BadRequestHttpException
      */
     public function actionVerifyEmail($token)
     {
@@ -229,11 +229,11 @@ class SiteController extends Controller
         }
         if (($user = $model->verifyEmail()) && Yii::$app->user->login($user)) {
             Yii::$app->session->setFlash('success', 'Your email has been confirmed!');
-            return $this->goHome();
+            return $this->render('verify-email', ['success' => true]);
         }
 
         Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account with provided token.');
-        return $this->goHome();
+        return $this->render('verify-email', ['success' => false]);
     }
 
     /**

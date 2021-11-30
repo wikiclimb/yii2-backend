@@ -6,6 +6,7 @@ return [
         '@staticPath' => dirname(__DIR__, 2) . '/static',
         '@imgPath' => '@staticPath/img',
     ],
+    'name' => 'WikiClimb',
     'vendorPath' => dirname(__DIR__, 2) . '/vendor',
     'components' => [
         'cache' => [

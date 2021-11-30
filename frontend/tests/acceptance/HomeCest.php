@@ -10,7 +10,7 @@ class HomeCest
     public function checkHome(AcceptanceTester $I)
     {
         $I->amOnPage(Url::toRoute('/site/index'));
-        $I->see('My Application');
+        $I->see('WikiClimb');
 
         $I->seeLink('About');
         $I->click('About');

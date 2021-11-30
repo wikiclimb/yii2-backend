@@ -1,10 +1,9 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
 use Yii;
 use yii\base\Model;
-use common\models\User;
 
 /**
  * Signup form
@@ -48,14 +47,12 @@ class SignupForm extends Model
         if (!$this->validate()) {
             return null;
         }
-        
         $user = new User();
         $user->username = $this->username;
         $user->email = $this->email;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
-
         return $user->save() && $this->sendEmail($user);
     }
 
@@ -72,7 +69,8 @@ class SignupForm extends Model
                 ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'],
                 ['user' => $user]
             )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
+            ->setFrom(['sauco.raul@gmail.com' => 'Raul Sauco (WikiClimb)'])
+//            ->setFrom(['registration@wikiclimb.org' => Yii::$app->name . ' Registration'])
             ->setTo($this->email)
             ->setSubject('Account registration at ' . Yii::$app->name)
             ->send();
