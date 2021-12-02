@@ -5,6 +5,8 @@ namespace apiv1\helpers;
 use common\helpers\I18nStringHelper;
 use common\helpers\I18nTextHelper;
 use common\models\Node;
+use common\models\Point;
+use Yii;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -25,11 +27,20 @@ class NodeHelper
      */
     public static function load(Node $node, array $params): bool
     {
-        // load 'description' and 'name' parameters.
-        if (!self::loadI18NStrings($node, $params)) {
-            return false;
+        self::loadDirectAttributes($node, $params);
+        return self::loadI18NStrings($node, $params)
+            && self::loadGeolocationData($node, $params)
+            && $node->save();
+    }
+
+    public static function loadDirectAttributes(Node $node, array $params): void
+    {
+        $attrs = ['node_type_id'];
+        foreach ($attrs as $attr) {
+            if (isset($params[$attr]) && !empty($params[$attr])) {
+                $node->setAttribute($attr, $params[$attr]);
+            }
         }
-        return $node->save();
     }
 
     /**
@@ -42,13 +53,7 @@ class NodeHelper
      */
     public static function loadI18NStrings(Node $node, array $params): bool
     {
-        if (!self::loadName($node, $params)) {
-            return false;
-        }
-        if (!self::loadDescription($node, $params)) {
-            return false;
-        }
-        return true;
+        return self::loadName($node, $params) && self::loadDescription($node, $params);
     }
 
     /**
@@ -123,6 +128,62 @@ class NodeHelper
                 );
             }
         }
+        return true;
+    }
+
+    /**
+     * Update a Node instance with geolocation information contained on the given parameter array.
+     * @param Node $node
+     * @param array $params
+     * @return bool
+     * @throws ServerErrorHttpException
+     */
+    public static function loadGeolocationData(Node $node, array $params): bool
+    {
+        if (isset($params['lat']) && isset($params['lng'])
+            && !empty($params['lat']) && !empty($params['lng'])) {
+            if (($point = $node->point) !== null) {
+                $touched = false;
+                if ($point->lat !== $params['lat']) {
+                    $point->lat = $params['lat'];
+                    $touched = true;
+                }
+                if ($point->lng !== $params['lng']) {
+                    $point->lng = $params['lng'];
+                    $touched = true;
+                }
+                if ($touched && !$point->save()) {
+                    throw new ServerErrorHttpException(
+                        Yii::t('app',
+                            'Failed to update point {{point}} with lat {{lat}} and lng {{lng}}',
+                            ['point' => $point->id, 'lat' => $params['lat'], 'lng' => $params['lng']])
+                    );
+                }
+            } else {
+                $point = new Point();
+                $point->lat = $params['lat'];
+                $point->lng = $params['lng'];
+                if (!$point->save()) {
+                    $message = Yii::t('app',
+                        'Failed to update point {{point}} with lat {{lat}} and lng {{lng}}',
+                        ['point' => $point->id, 'lat' => $params['lat'], 'lng' => $params['lng']]
+                    );
+                    Yii::error($message, __METHOD__);
+                    throw new ServerErrorHttpException($message);
+                }
+                $node->point_id = $point->id;
+                if (!$node->save()) {
+                    $message = Yii::t('app',
+                        'Failed to update node point to {{point}} with lat {{lat}} and lng {{lng}}',
+                        ['point' => $point->id, 'lat' => $params['lat'], 'lng' => $params['lng']]
+                    );
+                    Yii::error($message, __METHOD__);
+                    throw new ServerErrorHttpException($message);
+                }
+            }
+            return true;
+        }
+        // If the parameters are not set, just ignore the request.
         return true;
     }
 }

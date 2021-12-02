@@ -56,6 +56,17 @@ class Node extends \common\models\Node
         $fields['rating'] = static function (Node $model) {
             return NodeHelper::getRating($model);
         };
+        if ($this->point !== null) {
+            // The explicit cast to float is necessary, otherwise the JSON
+            // serializer converts them to strings to preserve precision.
+            // Ignore the IDE warning about redundant type cast.
+            $fields['lat'] = static function (Node $node) {
+                return (float)$node->point->lat ?? '';
+            };
+            $fields['lng'] = static function (Node $node) {
+                return (float)$node->point?->lng ?? '';
+            };
+        }
         $fields['created_by'] = static function (Node $model) {
             return $model->createdBy?->username ?? '';
         };

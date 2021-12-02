@@ -103,6 +103,31 @@ class NodeCest
         ]);
     }
 
+    public function viewAsGuestShowsGeolocationFields(ApiTester $I)
+    {
+        $I->amGoingTo('request a node as a guest user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet('nodes/7');
+        $I->expect('a 200 response code');
+        $I->seeResponseCodeIs(200);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('see node-7 data');
+        $I->seeResponseContainsJson([
+            'id' => 7,
+            'type' => 'Route',
+            'lat' => 22.23041032,
+            'lng' => 133.5315319,
+            'name' => 'node-7-name',
+            'description' => 'node-7-description',
+            'breadcrumbs' => [],
+            'node_type_id' => Node::TYPE_ROUTE,
+            'name_id' => 107,
+            'rating' => 0,
+            'cover_url' => null,
+        ]);
+    }
+
     public function createAsGuest(ApiTester $I)
     {
         $I->amGoingTo('try to create a new node as a guest user');
@@ -127,6 +152,8 @@ class NodeCest
             'name' => 'created-node-name',
             'type' => 4,
             'description' => 'created-node-description',
+            'lat' => 22.0922,
+            'lng' => 134.555111,
         ];
         $I->amGoingTo('try to create a new node as a guest user');
         $I->haveHttpHeader('Content-Type', 'application/json');

@@ -28,11 +28,39 @@ class NodeHelperTest extends Unit
         ];
     }
 
+    public function testLoadNewEmptyNode()
+    {
+        $lat = 24.024;
+        $lng = 125.404;
+        $params = [
+            'node_type_id' => 2,
+            'name' => 'test-name',
+            'description' => 'test-description',
+            'lat' => $lat,
+            'lng' => $lng,
+        ];
+        $node = new Node();
+        expect($node->id)->isEmpty();
+        expect(NodeHelper::load($node, $params));
+        expect($node->id)->notEmpty();
+        expect($node->node_type_id)->equals(2);
+        expect($node->name_id)->notEmpty();
+        expect($node->name)->notNull();
+        expect($node->name->default)->equals($params['name']);
+        expect($node->description_id)->notEmpty();
+        expect($node->description)->notNull();
+        expect($node->description->default)->equals($params['description']);
+        $point = $node->point;
+        expect($point)->notNull();
+        expect($point->lat)->equals($lat);
+        expect($point->lng)->equals($lng);
+    }
+
     /**
      * @throws ServerErrorHttpException
      * @throws UnprocessableEntityHttpException
      */
-    public function testLoadNewNode()
+    public function testLoadExistingNodeNewStrings()
     {
         $params = [
             'name' => 'test-name',
@@ -68,6 +96,36 @@ class NodeHelperTest extends Unit
         expect($node->description_id)->notEmpty();
         expect($node->description)->notNull();
         expect($node->description->default)->equals($params['description']);
+    }
+
+
+    /**
+     * @throws ServerErrorHttpException
+     * @throws UnprocessableEntityHttpException
+     */
+    public function testLoadExistingNodeWithExistingGpsData()
+    {
+        $lat = 24.024;
+        $lng = 125.404;
+        $params = [
+            'name' => 'test-name',
+            'description' => 'test-description',
+            'lat' => $lat,
+            'lng' => $lng,
+        ];
+        $node = Node::findOne(6);
+        expect($node)->notNull();
+        expect(NodeHelper::load($node, $params));
+        expect($node->name_id)->notEmpty();
+        expect($node->name)->notNull();
+        expect($node->name->default)->equals($params['name']);
+        expect($node->description_id)->notEmpty();
+        expect($node->description)->notNull();
+        expect($node->description->default)->equals($params['description']);
+        $point = $node->point;
+        expect($point)->notNull();
+        expect($point->lat)->equals($lat);
+        expect($point->lng)->equals($lng);
     }
 
     /**
@@ -127,6 +185,10 @@ class NodeHelperTest extends Unit
         expect($node->name->default)->equals($name);
     }
 
+    /**
+     * @throws ServerErrorHttpException
+     * @throws UnprocessableEntityHttpException
+     */
     public function testLoadNameExistingNode()
     {
         $name = 'loaded-test-name';
@@ -172,5 +234,40 @@ class NodeHelperTest extends Unit
         expect($node->description_id)->notEmpty();
         expect($node->description)->notNull();
         expect($node->description->default)->equals($description);
+    }
+
+    /**
+     * @throws ServerErrorHttpException
+     */
+    public function testRequestWithGeolocationWhenEmpty()
+    {
+        $lat = 24.024;
+        $lng = 125.404;
+        $node = Node::findOne(5);
+        expect($node)->notNull();
+        expect(NodeHelper::loadGeolocationData($node, ['lat' => $lat, 'lng' => $lng]));
+        $point = $node->point;
+        expect($point)->notNull();
+        expect($point->lat)->equals($lat);
+        expect($point->lng)->equals($lng);
+    }
+
+    /**
+     * @throws ServerErrorHttpException
+     */
+    public function testRequestWithGeolocationWhenNotEmpty()
+    {
+        $lat = '24.024';
+        $lng = '125.404';
+        $node = Node::findOne(6);
+        expect($node)->notNull();
+        expect(($point = $node->point))->notNull();
+        expect($point->lat, 22.0);
+        expect($point->lng, (float)33);
+        expect(NodeHelper::loadGeolocationData($node, ['lat' => $lat, 'lng' => $lng]));
+        $point = $node->point;
+        expect($point)->notNull();
+        expect($point->lat)->equals($lat);
+        expect($point->lng)->equals($lng);
     }
 }

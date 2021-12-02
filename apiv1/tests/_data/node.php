@@ -35,4 +35,28 @@ return [
         'description_id' => 104,
         'point_id' => null,
     ],
+    [
+        'id' => 5,
+        'node_type_id' => Node::TYPE_AREA,
+        'parent_id' => null,
+        'name_id' => 105,
+        'description_id' => 105,
+        'point_id' => null,
+    ],
+    [
+        'id' => 6,
+        'node_type_id' => Node::TYPE_AREA,
+        'parent_id' => null,
+        'name_id' => 106,
+        'description_id' => 106,
+        'point_id' => 1,
+    ],
+    [
+        'id' => 7,
+        'node_type_id' => Node::TYPE_ROUTE,
+        'parent_id' => null,
+        'name_id' => 107,
+        'description_id' => 107,
+        'point_id' => 2,
+    ],
 ];

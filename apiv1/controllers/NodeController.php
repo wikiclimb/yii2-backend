@@ -5,8 +5,6 @@ namespace apiv1\controllers;
 use api\controllers\ActiveBaseController;
 use apiv1\helpers\NodeHelper;
 use apiv1\models\Node;
-use common\helpers\I18nStringHelper;
-use common\helpers\I18nTextHelper;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
@@ -66,10 +64,12 @@ class NodeController extends ActiveBaseController
 
     /**
      * @return Node
+     * @throws Exception
      * @throws ForbiddenHttpException
      * @throws InvalidConfigException
      * @throws ServerErrorHttpException
      * @throws UnprocessableEntityHttpException
+     * @throws \Throwable
      */
     public function actionCreate(): Node
     {
@@ -81,28 +81,24 @@ class NodeController extends ActiveBaseController
         $params = Yii::$app->getRequest()->getBodyParams();
         // Default scenario.
         $model = new $this->modelClass;
-        if (($model->name_id = I18nStringHelper::parseToModel(
-                $params['name'] ?? '')?->id) === null) {
-            throw new UnprocessableEntityHttpException(
-                'Name value is not valid.'
-            );
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (NodeHelper::load($model, Yii::$app->getRequest()->getBodyParams())) {
+                $response = Yii::$app->getResponse();
+                $response->setStatusCode(201);
+                $response->getHeaders()->set('Location',
+                    Url::toRoute(['node/view', 'id' => $model->id], true));
+            } elseif (!$model->hasErrors()) {
+                $transaction->rollBack();
+                throw new ServerErrorHttpException(
+                    'Failed to create the Node for unknown reason.');
+            }
+            $transaction->commit();
+            return $model;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            throw $e;
         }
-        if (($model->description_id = I18nTextHelper::parseToModel(
-                $params['description'] ?? '')?->id) === null) {
-            throw new UnprocessableEntityHttpException(
-                'Description value is not valid.'
-            );
-        }
-        // Mass load some parameters from the request.
-        $model->load($params, '');
-        if ($model->save()) {
-            $response = Yii::$app->getResponse();
-            $response->setStatusCode(201);
-            $response->getHeaders()->set('Location', Url::toRoute(['node/view', 'id' => $model->id], true));
-        } elseif (!$model->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
-        }
-        return $model;
     }
 
     /**
