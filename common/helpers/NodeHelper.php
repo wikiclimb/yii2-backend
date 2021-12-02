@@ -36,4 +36,16 @@ class NodeHelper
     {
         return round($node->getNodeRatings()->average('rating'), 1);
     }
+
+    /**
+     * Get the current number of user ratings for a given Node.
+     * Use this wrapper instead of directly querying the database to help
+     * propagate any future changes.
+     * @param Node $node
+     * @return int
+     */
+    public static function getRatingsCount(Node $node): int
+    {
+        return $node->getNodeRatings()->count();
+    }
 }

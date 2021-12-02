@@ -56,6 +56,9 @@ class Node extends \common\models\Node
         $fields['rating'] = static function (Node $model) {
             return NodeHelper::getRating($model);
         };
+        $fields['ratings_count'] = static function (Node $node) {
+            return NodeHelper::getRatingsCount($node);
+        };
         if ($this->point !== null) {
             // The explicit cast to float is necessary, otherwise the JSON
             // serializer converts them to strings to preserve precision.

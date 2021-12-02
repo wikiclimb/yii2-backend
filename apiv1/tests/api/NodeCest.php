@@ -99,6 +99,7 @@ class NodeCest
             'node_type_id' => Node::TYPE_AREA,
             'name_id' => 104,
             'rating' => 3.5,
+            'ratings_count' => 4,
             'cover_url' => 'image-2.jpg',
         ]);
     }
@@ -124,6 +125,7 @@ class NodeCest
             'node_type_id' => Node::TYPE_ROUTE,
             'name_id' => 107,
             'rating' => 0,
+            'ratings_count' => 0,
             'cover_url' => null,
         ]);
     }

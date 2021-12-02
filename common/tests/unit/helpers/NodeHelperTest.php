@@ -42,4 +42,12 @@ class NodeHelperTest extends Unit
         $expected = round((4 + 2 + 3 + 5) / 4.0, 1);
         expect($rating)->equals($expected);
     }
+
+    public function testRatingsCountCalculation()
+    {
+        $node = Node::findOne(4);
+        expect($node)->notNull();
+        $ratingsCount = NodeHelper::getRatingsCount($node);
+        expect($ratingsCount)->equals(4);
+    }
 }
