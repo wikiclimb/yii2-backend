@@ -70,4 +70,8 @@ return [
         'default' => 'image-3-name',
         'en' => 'image-3-name',
     ],
+    [
+        'id' => 666,
+        'default' => 'fallback-string',
+    ],
 ];

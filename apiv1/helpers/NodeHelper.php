@@ -2,11 +2,12 @@
 
 namespace apiv1\helpers;
 
+use apiv1\models\Node;
 use common\helpers\I18nStringHelper;
 use common\helpers\I18nTextHelper;
-use common\models\Node;
 use common\models\Point;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -17,6 +18,41 @@ use yii\web\UnprocessableEntityHttpException;
  */
 class NodeHelper
 {
+    /**
+     * Fetch Nodes that are link with a point that falls between the LatLng bounds given.
+     * @param $params
+     * @return ActiveDataProvider
+     */
+    public static function searchWithinBounds($params): ActiveDataProvider
+    {
+        $query = Node::find()->joinWith('point')
+            ->where([
+                    'between',
+                    'point.lat',
+                    (float)$params['south'],
+                    (float)$params['north']]
+            )->andWhere([
+                'between',
+                'point.lng',
+                (float)$params['west'],
+                (float)$params['east']
+            ]);
+        if (isset($params['exclude']) && strlen($params['exclude']) > 0) {
+            $query->andWhere(['not in', 'node.id', explode(',', $params['exclude'])]);
+        }
+        if (($type = Yii::$app->request->get('type')) !== null) {
+            $query->andWhere(['node_type_id' => $type]);
+        }
+        return new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSizeLimit' => [1, 1000],
+                'defaultPageSize' => 1000,
+                'params' => $params,
+            ],
+        ]);
+    }
+
     /**
      * Load all values from parameters into node instance.
      * @param Node $node

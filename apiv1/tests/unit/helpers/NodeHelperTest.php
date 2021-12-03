@@ -28,6 +28,26 @@ class NodeHelperTest extends Unit
         ];
     }
 
+    public function testSearchWithinBounds()
+    {
+        $params = [
+            'type' => 1,
+            'bounded' => true,
+            'north' => 23.14,
+            'east' => 135.19,
+            'south' => 22.05,
+            'west' => 133.03,
+        ];
+        $dataProvider = NodeHelper::searchWithinBounds($params);
+        $result = $dataProvider->keys;
+        // 8 fits within bounds.
+        expect($result)->contains(8);
+        // 1 does not have geo info.
+        expect($result)->notContains(1);
+        // 6 falls outside the given bounds.
+        expect($result)->notContains(6);
+    }
+
     public function testLoadNewEmptyNode()
     {
         $lat = 24.024;

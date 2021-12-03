@@ -59,4 +59,20 @@ return [
         'description_id' => 107,
         'point_id' => 2,
     ],
+    [
+        'id' => 8,
+        'node_type_id' => Node::TYPE_AREA,
+        'parent_id' => null,
+        'name_id' => 666,
+        'description_id' => 666,
+        'point_id' => 3,
+    ],
+    [
+        'id' => 9,
+        'node_type_id' => Node::TYPE_AREA,
+        'parent_id' => null,
+        'name_id' => 666,
+        'description_id' => 666,
+        'point_id' => 4,
+    ],
 ];

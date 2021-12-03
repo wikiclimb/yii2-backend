@@ -47,4 +47,8 @@ return [
         'default' => 'image-3-description',
         'en' => 'image-3-description',
     ],
+    [
+        'id' => 666,
+        'default' => 'fallback-string',
+    ],
 ];

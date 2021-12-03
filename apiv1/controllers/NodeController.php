@@ -7,6 +7,8 @@ use apiv1\helpers\NodeHelper;
 use apiv1\models\Node;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\db\Exception;
 use yii\helpers\Url;
 use yii\web\ForbiddenHttpException;
@@ -30,6 +32,9 @@ class NodeController extends ActiveBaseController
             $actions['create'],
             $actions['update'],
         );
+        $actions['index']['prepareDataProvider'] = [
+            $this, 'prepareDataProvider',
+        ];
         return $actions;
     }
 
@@ -60,6 +65,39 @@ class NodeController extends ActiveBaseController
         throw new ForbiddenHttpException(
             Yii::t('yii', 'You are not allowed to perform this action.')
         );
+    }
+
+    /**
+     * Prepare a DataProvider that will manage access to node data.
+     * @return ActiveDataProvider
+     */
+    public function prepareDataProvider(): ActiveDataProvider
+    {
+        if ((bool)Yii::$app->request->get('bounded') === true
+            && Yii::$app->request->get('north') !== null
+            && Yii::$app->request->get('east') !== null
+            && Yii::$app->request->get('south') !== null
+            && Yii::$app->request->get('west') !== null) {
+            return NodeHelper::searchWithinBounds(Yii::$app->request->get());
+        } else {
+            /** @var ActiveQuery $query */
+            $query = $this->modelClass::find();
+            /** @var int $type */
+            $type = Yii::$app->request->get('type');
+            if ($type !== null) {
+                $query->where(['node_type_id' => $type]);
+            }
+            return new ActiveDataProvider([
+                'query' => $query,
+                'pagination' => [
+                    'pageSizeLimit' => [1, 1000],
+                    'defaultPageSize' => 50
+                ],
+                'sort' => [
+                    'defaultOrder' => ['id' => SORT_DESC]
+                ]
+            ]);
+        }
     }
 
     /**

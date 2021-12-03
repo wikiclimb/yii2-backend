@@ -61,6 +61,56 @@ class NodeCest
         ]);
     }
 
+    public function indexAsUserFilteringByType(ApiTester $I)
+    {
+        $I->amGoingTo('request a list of nodes as user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendGet('nodes?type=1');
+        $I->expect('a 200 response code');
+        $I->seeResponseCodeIs(200);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('see node-1');
+        $I->seeResponseContainsJson([
+            'id' => 1,
+            'node_type_id' => 1,
+            'name_id' => 101,
+        ]);
+        $I->expectTo('not see node 7 because it is a route');
+        $I->dontSeeResponseContainsJson(['id' => 7]);
+    }
+
+    public function indexAsUserFilteringByGeolocation(ApiTester $I)
+    {
+        $I->amGoingTo('request a list of nodes filtered by coordinates as user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendGet('nodes?bounded=true&north=23.14&east=135.19&south=22.05&west=133.03');
+        $I->expect('a 200 response code');
+        $I->seeResponseCodeIs(200);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('see node-8 because it falls within bounds');
+        $I->seeResponseContainsJson([
+            'id' => 8,
+            'node_type_id' => 1,
+            'name_id' => 666,
+        ]);
+        $I->expectTo('not see node 1 because it does not have GPS info');
+        $I->dontSeeResponseContainsJson([
+            'id' => 1,
+            'name_id' => 101,
+        ]);
+        $I->expectTo('not see node 6 because it falls out of bounds');
+        $I->dontSeeResponseContainsJson([
+            'id' => 6,
+            'name_id' => 106,
+        ]);
+        $I->expectTo('not see node 9 because it falls out of bounds');
+        $I->dontSeeResponseContainsJson(['id' => 9]);
+    }
+
     public function viewAsGuest(ApiTester $I)
     {
         $I->amGoingTo('request a node as a guest user');
