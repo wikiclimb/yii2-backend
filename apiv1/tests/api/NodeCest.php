@@ -323,6 +323,26 @@ class NodeCest
         $I->seeResponseContainsJson($nodeData);
     }
 
+
+    public function updateCoverImageAsUser(ApiTester $I)
+    {
+        $nodeData = [
+            'id' => 4,
+            'name' => 'area-1-updated-name',
+            'description' => 'area-1-updated-description',
+            'cover_url' => 'image-1.jpg',
+        ];
+        $I->amGoingTo('try to update node as a user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendPatch('nodes/4', $nodeData);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('receive a 200 success response');
+        $I->seeResponseCodeIs(200);
+        $I->seeResponseContainsJson($nodeData);
+    }
+
     public function deleteAsGuest(ApiTester $I)
     {
         $I->amGoingTo('try to delete a node as a guest user');

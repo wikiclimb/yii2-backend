@@ -2,12 +2,15 @@
 
 namespace apiv1\helpers;
 
+use apiv1\models\Image;
 use apiv1\models\Node;
 use common\helpers\I18nStringHelper;
 use common\helpers\I18nTextHelper;
+use common\models\NodeImage;
 use common\models\Point;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\web\BadRequestHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -60,15 +63,22 @@ class NodeHelper
      * @return bool
      * @throws ServerErrorHttpException
      * @throws UnprocessableEntityHttpException
+     * @throws BadRequestHttpException
      */
     public static function load(Node $node, array $params): bool
     {
         self::loadDirectAttributes($node, $params);
         return self::loadI18NStrings($node, $params)
+            && self::loadCoverImage($node, $params)
             && self::loadGeolocationData($node, $params)
             && $node->save();
     }
 
+    /**
+     * Load all values not linked to any relation.
+     * @param Node $node
+     * @param array $params
+     */
     public static function loadDirectAttributes(Node $node, array $params): void
     {
         $attrs = ['node_type_id'];
@@ -77,6 +87,57 @@ class NodeHelper
                 $node->setAttribute($attr, $params[$attr]);
             }
         }
+    }
+
+    /**
+     * Let users update the cover image simply sending the file name of an existing
+     * node image linked to this node.
+     * @param Node $node
+     * @param array $params
+     * @return bool
+     * @throws BadRequestHttpException
+     * @throws ServerErrorHttpException
+     */
+    public static function loadCoverImage(Node $node, array $params): bool
+    {
+        // check if update is needed
+        if (!isset($params['cover_url']) || !is_string($params['cover_url'])
+            || ($newFileName = trim($params['cover_url'])) === '') {
+            return true;
+        }
+        $newCover = $params['cover_url'];
+        $oldCover = NodeImage::findOne([
+            'node_id' => $node->id, 'is_cover' => true,
+        ]);
+        if ($oldCover !== null && $oldCover->image->file_name === $newFileName) {
+            return true;
+        }
+        if (($image = Image::findOne(['file_name' => trim($newCover)])) === null) {
+            throw new BadRequestHttpException(
+                Yii::t('app',
+                    'Could not find image for file name {{fileName}}',
+                    ['fileName' => trim($newCover)])
+            );
+        }
+        if (($nodeImage = NodeImage::findOne([
+                'node_id' => $node->id, 'image_id' => $image->id,
+            ])) === null) {
+            throw new BadRequestHttpException(
+                Yii::t('app',
+                    'Could not find image for file name {{fileName}}',
+                    ['fileName' => trim($newCover)])
+            );
+        }
+        if ($oldCover !== null) {
+            $oldCover->is_cover = 0;
+            if (!$oldCover->save()) {
+                throw new ServerErrorHttpException(
+                    Yii::t('app', 'Error updating node cover information')
+                );
+            }
+        }
+        $nodeImage->is_cover = 1;
+        return $nodeImage->save();
     }
 
     /**

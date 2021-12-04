@@ -4,9 +4,12 @@ namespace apiv1\tests\unit\helpers;
 
 use apiv1\helpers\NodeHelper;
 use apiv1\models\Node;
+use apiv1\tests\UnitTester;
 use Codeception\Test\Unit;
 use common\fixtures\AuthFixture;
 use common\fixtures\NodeFixture;
+use common\fixtures\NodeImageFixture;
+use common\models\NodeImage;
 use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 
@@ -18,6 +21,11 @@ use yii\web\UnprocessableEntityHttpException;
 class NodeHelperTest extends Unit
 {
     /**
+     * @var UnitTester
+     */
+    protected UnitTester $tester;
+
+    /**
      * @return array
      */
     public function _fixtures(): array
@@ -25,6 +33,7 @@ class NodeHelperTest extends Unit
         return [
             AuthFixture::class,
             NodeFixture::class,
+            NodeImageFixture::class,
         ];
     }
 
@@ -289,5 +298,96 @@ class NodeHelperTest extends Unit
         expect($point)->notNull();
         expect($point->lat)->equals($lat);
         expect($point->lng)->equals($lng);
+    }
+
+    public function testLoadCoverImageNewExisting()
+    {
+        $newCoverImageName = 'image-1.jpg';
+        $node = Node::findOne(4);
+        expect($node)->notNull();
+        $nodeImage = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($nodeImage)->notNull();
+        expect($nodeImage->image)->notNull();
+        expect($nodeImage->image->file_name)->equals('image-2.jpg');
+        expect(
+            NodeHelper::loadCoverImage($node, ['cover_url' => $newCoverImageName])
+        )->true();
+        $updatedCover = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($updatedCover->image_id)->equals(1);
+    }
+
+    public function testLoadCoverImageEmpty()
+    {
+        $newCoverImageName = '';
+        $node = Node::findOne(4);
+        expect($node)->notNull();
+        $nodeImage = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($nodeImage)->notNull();
+        expect($nodeImage->image)->notNull();
+        expect($nodeImage->image->file_name)->equals('image-2.jpg');
+        // Expect the loader to ignore the empty parameter
+        expect(
+            NodeHelper::loadCoverImage($node, ['cover_url' => $newCoverImageName])
+        )->true();
+        $updatedCover = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($updatedCover->image_id)->equals(2);
+    }
+
+    public function testLoadCoverImageNull()
+    {
+        $newCoverImageName = null;
+        $node = Node::findOne(4);
+        expect($node)->notNull();
+        $nodeImage = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($nodeImage)->notNull();
+        expect($nodeImage->image)->notNull();
+        expect($nodeImage->image->file_name)->equals('image-2.jpg');
+        // Expect the loader to ignore the null parameter
+        expect(
+            NodeHelper::loadCoverImage($node, ['cover_url' => $newCoverImageName])
+        )->true();
+        $updatedCover = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($updatedCover->image_id)->equals(2);
+    }
+
+    public function testLoadCoverImageEqualToCurrent()
+    {
+        $newCoverImageName = 'image-2.jpg';
+        $node = Node::findOne(4);
+        expect($node)->notNull();
+        $nodeImage = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($nodeImage)->notNull();
+        expect($nodeImage->image)->notNull();
+        expect($nodeImage->image->file_name)->equals('image-2.jpg');
+        // Expect the loader to ignore the null parameter
+        expect(
+            NodeHelper::loadCoverImage($node, ['cover_url' => $newCoverImageName])
+        )->true();
+        $updatedCover = NodeImage::findOne([
+            'node_id' => $node->id,
+            'is_cover' => true,
+        ]);
+        expect($updatedCover->image_id)->equals(2);
     }
 }
