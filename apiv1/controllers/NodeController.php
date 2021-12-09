@@ -87,6 +87,16 @@ class NodeController extends ActiveBaseController
             if ($type !== null) {
                 $query->where(['node_type_id' => $type]);
             }
+            $q = Yii::$app->request->get('q');
+            if ($q !== null) {
+                $query->joinWith(['name as name', 'description as description'])
+                    ->andWhere(['or',
+                        ['like', 'name.default', $q],
+                        ['like', 'name.en', $q],
+                        ['like', 'description.default', $q],
+                        ['like', 'description.en', $q],
+                    ]);
+            }
             return new ActiveDataProvider([
                 'query' => $query,
                 'pagination' => [

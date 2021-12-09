@@ -111,6 +111,31 @@ class NodeCest
         $I->dontSeeResponseContainsJson(['id' => 9]);
     }
 
+
+    public function indexAsUserWithSearchQuery(ApiTester $I)
+    {
+        $I->amGoingTo('request a list of nodes as user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendGet('nodes?q=node-6');
+        $I->expect('a 200 response code');
+        $I->seeResponseCodeIs(200);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('not see node-1');
+        $I->dontSeeResponseContainsJson([
+            'id' => 1,
+            'node_type_id' => 1,
+            'name_id' => 101,
+        ]);
+        $I->expectTo('see node-6 because it matches the query');
+        $I->seeResponseContainsJson([
+            'id' => 6,
+            'node_type_id' => 1,
+            'name_id' => 106,
+        ]);
+    }
+
     public function viewAsGuest(ApiTester $I)
     {
         $I->amGoingTo('request a node as a guest user');
