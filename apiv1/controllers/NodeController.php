@@ -97,6 +97,10 @@ class NodeController extends ActiveBaseController
                         ['like', 'description.en', $q],
                     ]);
             }
+            $parentId = Yii::$app->request->get('parent-id');
+            if ($parentId !== null) {
+                $query->andWhere(['node.parent_id' => $parentId]);
+            }
             return new ActiveDataProvider([
                 'query' => $query,
                 'pagination' => [

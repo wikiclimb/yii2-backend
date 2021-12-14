@@ -75,4 +75,12 @@ return [
         'description_id' => 666,
         'point_id' => 4,
     ],
+    [
+        'id' => 10,
+        'node_type_id' => Node::TYPE_AREA,
+        'parent_id' => 2,
+        'name_id' => 666,
+        'description_id' => 666,
+        'point_id' => null,
+    ],
 ];

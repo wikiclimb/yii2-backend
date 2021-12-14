@@ -136,6 +136,48 @@ class NodeCest
         ]);
     }
 
+    public function indexChildrenAsUser(ApiTester $I)
+    {
+        $I->amGoingTo('request a list of nodes as user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendGet('nodes?parent-id=2');
+        $I->expect('a 200 response code');
+        $I->seeResponseCodeIs(200);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('see only children of node 2');
+        $I->seeResponseContainsJson([
+            [
+                'id' => 3,
+                'node_type_id' => Node::TYPE_AREA,
+                'parent_id' => 2,
+                'name_id' => 103,
+                'description_id' => 103,
+                'point_id' => null,
+            ],
+            [
+                'id' => 10,
+                'node_type_id' => Node::TYPE_AREA,
+                'parent_id' => 2,
+                'name_id' => 666,
+                'description_id' => 666,
+                'point_id' => null,
+            ],
+        ]);
+        $I->expectTo('not see children of other nodes');
+        $I->dontSeeResponseContainsJson(
+            [
+                'id' => 4,
+                'node_type_id' => Node::TYPE_AREA,
+                'parent_id' => 3,
+                'name_id' => 104,
+                'description_id' => 104,
+                'point_id' => null,
+            ],
+        );
+    }
+
     public function viewAsGuest(ApiTester $I)
     {
         $I->amGoingTo('request a node as a guest user');
