@@ -64,6 +64,7 @@ class NodeHelperTest extends Unit
         $params = [
             'node_type_id' => 2,
             'name' => 'test-name',
+            'parent_id' => 1,
             'description' => 'test-description',
             'lat' => $lat,
             'lng' => $lng,
@@ -73,6 +74,7 @@ class NodeHelperTest extends Unit
         expect(NodeHelper::load($node, $params));
         expect($node->id)->notEmpty();
         expect($node->node_type_id)->equals(2);
+        expect($node->parent_id)->equals(1);
         expect($node->name_id)->notEmpty();
         expect($node->name)->notNull();
         expect($node->name->default)->equals($params['name']);
@@ -94,10 +96,12 @@ class NodeHelperTest extends Unit
         $params = [
             'name' => 'test-name',
             'description' => 'test-description',
+            'parent_id' => 1,
         ];
         $node = Node::findOne(4);
         expect($node)->notNull();
         expect(NodeHelper::load($node, $params));
+        expect($node->parent_id)->equals(3);
         expect($node->name_id)->notEmpty();
         expect($node->name)->notNull();
         expect($node->name->default)->equals($params['name']);

@@ -323,6 +323,25 @@ class NodeCest
         $I->seeResponseContainsJson($nodeData);
     }
 
+    public function createAsUserWithParentId(ApiTester $I)
+    {
+        $nodeData = [
+            'node_type_id' => Node::TYPE_AREA,
+            'name' => 'created-node-name',
+            'parent_id' => 1,
+        ];
+        $I->amGoingTo('try to create a new node as a guest user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendPost('nodes', $nodeData);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('receive a 201 created response');
+        $I->seeResponseCodeIs(201);
+        $nodeData['description'] = 'This descripton needs to be updated';
+        $I->seeResponseContainsJson($nodeData);
+    }
+
     public function updateAsGuest(ApiTester $I)
     {
         $I->amGoingTo('try to create a new node as a guest user');
@@ -370,6 +389,29 @@ class NodeCest
         $I->expectTo('receive a 200 success response');
         $I->seeResponseCodeIs(200);
         $I->seeResponseContainsJson($nodeData);
+    }
+
+    public function updateAsUserDoesNotUpdateParentId(ApiTester $I)
+    {
+        $nodeData = [
+            'name' => 'area-4-updated-name',
+            'description' => 'area-4-updated-description',
+            'parent_id' => 1,
+        ];
+        $I->amGoingTo('try to update node as a user');
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer user-2-access-token');
+        $I->sendPatch('nodes/4', $nodeData);
+        $I->expect('the response to be JSON');
+        $I->seeResponseIsJson();
+        $I->expectTo('receive a 200 success response');
+        $I->seeResponseCodeIs(200);
+        $I->seeResponseContainsJson([
+            'id' => 4,
+            'name' => 'area-4-updated-name',
+            'description' => 'area-4-updated-description',
+            'parent_id' => 3,
+        ]);
     }
 
     public function updateAsAdmin(ApiTester $I)

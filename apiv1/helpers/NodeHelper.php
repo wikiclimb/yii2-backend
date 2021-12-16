@@ -68,6 +68,7 @@ class NodeHelper
     public static function load(Node $node, array $params): bool
     {
         self::loadDirectAttributes($node, $params);
+        self::loadParentId($node, $params);
         return self::loadI18NStrings($node, $params)
             && self::loadCoverImage($node, $params)
             && self::loadGeolocationData($node, $params)
@@ -86,6 +87,19 @@ class NodeHelper
             if (isset($params[$attr]) && !empty($params[$attr])) {
                 $node->setAttribute($attr, $params[$attr]);
             }
+        }
+    }
+
+    /**
+     * Load a parent ID if the parameters contain a valid value and the node is a new node,
+     * ignore the call otherwise.
+     */
+    public static function loadParentId(Node $node, array $params): void
+    {
+        if (isset($params['parent_id']) && !empty($params['parent_id'])
+            && ($parent = Node::findOne($params['parent_id'])) !== null
+            && $node->isNewRecord) {
+            $node->parent_id = $parent->id;
         }
     }
 
