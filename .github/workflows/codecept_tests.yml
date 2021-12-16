@@ -17,12 +17,12 @@ jobs:
         run: sleep 10
       - name: Check containers health after delay
         run: docker ps -a
-      - name: Verify persistent database connection from host
-        run: |
-          sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port 33007 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
-      - name: Verify test database connection from host
-        run: mysql --host 127.0.0.1 --port 33006 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
+      #      - name: Verify persistent database connection from host
+      #        run: |
+      #          sudo apt-get install -y mysql-client
+      #          mysql --host 127.0.0.1 --port 33007 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
+      #      - name: Verify test database connection from host
+      #        run: mysql --host 127.0.0.1 --port 33006 --protocol=tcp -uroot -ppassword -e "SHOW DATABASES"
       - name: Migrate database
         run: ./yii_test migrate --interactive=0
       - name: Execute tests
