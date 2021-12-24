@@ -67,6 +67,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes): void
+    {
+        $this->updateAuth();
+        parent::afterSave($insert, $changedAttributes);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function findIdentity($id): User|IdentityInterface|null
@@ -226,5 +236,19 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Assign the 'user' role to new users once their account becomes active.
+     * @throws \Exception
+     */
+    private function updateAuth(): void
+    {
+        $auth = Yii::$app->authManager;
+        $auth->revokeAll($this->id);
+        if ($this->status == self::STATUS_ACTIVE) {
+            $role = $auth->getRole('user');
+            $auth->assign($role, $this->id);
+        }
     }
 }
