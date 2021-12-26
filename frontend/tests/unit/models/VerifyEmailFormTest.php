@@ -2,6 +2,7 @@
 
 namespace frontend\tests\unit\models;
 
+use common\fixtures\AuthFixture;
 use common\fixtures\UserFixture;
 use frontend\models\VerifyEmailForm;
 
@@ -16,27 +17,25 @@ class VerifyEmailFormTest extends \Codeception\Test\Unit
     public function _before()
     {
         $this->tester->haveFixtures([
-            'user' => [
-                'class' => UserFixture::className(),
-                'dataFile' => codecept_data_dir() . 'user.php'
-            ]
+            AuthFixture::class,
+            UserFixture::class,
         ]);
     }
 
     public function testVerifyWrongToken()
     {
-        $this->tester->expectThrowable('\yii\base\InvalidArgumentException', function() {
+        $this->tester->expectThrowable('\yii\base\InvalidArgumentException', function () {
             new VerifyEmailForm('');
         });
 
-        $this->tester->expectThrowable('\yii\base\InvalidArgumentException', function() {
+        $this->tester->expectThrowable('\yii\base\InvalidArgumentException', function () {
             new VerifyEmailForm('notexistingtoken_1391882543');
         });
     }
 
     public function testAlreadyActivatedToken()
     {
-        $this->tester->expectThrowable('\yii\base\InvalidArgumentException', function() {
+        $this->tester->expectThrowable('\yii\base\InvalidArgumentException', function () {
             new VerifyEmailForm('already_used_token_1548675330');
         });
     }

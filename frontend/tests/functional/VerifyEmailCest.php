@@ -2,6 +2,7 @@
 
 namespace frontend\tests\functional;
 
+use common\fixtures\AuthFixture;
 use common\fixtures\UserFixture;
 use frontend\tests\FunctionalTester;
 
@@ -10,17 +11,15 @@ class VerifyEmailCest
     /**
      * Load fixtures before db transaction begin
      * Called in _before()
-     * @see \Codeception\Module\Yii2::_before()
-     * @see \Codeception\Module\Yii2::loadFixtures()
      * @return array
+     * @see \Codeception\Module\Yii2::loadFixtures()
+     * @see \Codeception\Module\Yii2::_before()
      */
-    public function _fixtures()
+    public function _fixtures(): array
     {
         return [
-            'user' => [
-                'class' => UserFixture::className(),
-                'dataFile' => codecept_data_dir() . 'user.php',
-            ],
+            AuthFixture::class,
+            UserFixture::class,
         ];
     }
 
@@ -60,9 +59,9 @@ class VerifyEmailCest
         $I->see('Logout (test.test)', 'form button[type=submit]');
 
         $I->seeRecord('common\models\User', [
-           'username' => 'test.test',
-           'email' => 'test@mail.com',
-           'status' => \common\models\User::STATUS_ACTIVE
+            'username' => 'test.test',
+            'email' => 'test@mail.com',
+            'status' => \common\models\User::STATUS_ACTIVE
         ]);
     }
 }
