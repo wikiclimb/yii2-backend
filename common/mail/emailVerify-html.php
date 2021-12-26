@@ -2,12 +2,12 @@
 /* @var $this View */
 /* @var $user common\models\User */
 
-//$verifyLink = 'https://wikiclimb.org/site/verify-email?token=' .
-//    $user->verification_token;
+$verifyLink = 'https://wikiclimb.org/site/verify-email?token=' .
+    $user->verification_token;
 
 use yii\web\View;
 
-$verifyLink = Yii::$app->urlManager->createAbsoluteUrl(['site/verify-email', 'token' => $user->verification_token]);
+//$verifyLink = Yii::$app->urlManager->createAbsoluteUrl(['site/verify-email', 'token' => $user->verification_token]);
 
 ?>
 <!-- start preheader -->
