@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use Exception;
 use Yii;
 use yii\base\Model;
 
@@ -10,15 +11,15 @@ use yii\base\Model;
  */
 class SignupForm extends Model
 {
-    public $username;
-    public $email;
-    public $password;
+    public ?string $username = null;
+    public ?string $email = null;
+    public ?string $password = null;
 
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             ['username', 'trim'],
@@ -40,9 +41,10 @@ class SignupForm extends Model
     /**
      * Signs user up.
      *
-     * @return bool whether the creating new account was successful and email was sent
+     * @return bool|null whether the creating new account was successful and email was sent
+     * @throws \yii\base\Exception
      */
-    public function signup()
+    public function signup(): ?bool
     {
         if (!$this->validate()) {
             return null;
@@ -54,9 +56,16 @@ class SignupForm extends Model
         $user->generateAuthKey();
         $user->access_token = Yii::$app->security->generateRandomString();
         $user->generateEmailVerificationToken();
-//        $user->status = User::STATUS_ACTIVE;
-//        return $user->save();
-        return $user->save() && $this->sendEmail($user);
+        try {
+            return $user->save() && $this->sendEmail($user);
+        } catch (Exception $e) {
+            Yii::error([
+                "Error sending email for new user $this->username with id $user->id",
+                $e->getMessage(),
+            ], __METHOD__);
+            $user->status = User::STATUS_ACTIVE;
+            return $user->save();
+        }
     }
 
     /**
@@ -64,7 +73,7 @@ class SignupForm extends Model
      * @param User $user user model to with email should be send
      * @return bool whether the email was sent
      */
-    protected function sendEmail($user)
+    protected function sendEmail(User $user): bool
     {
         return Yii::$app
             ->mailer
