@@ -32,8 +32,9 @@ sudo a2ensite wikiclimb.conf
 sudo a2dissite 000-default.conf
 sudo apache2ctl configtest
 
-sudo 'Trying to install server certificates using LetsEncrypt'
+echo 'Trying to install server certificates using LetsEncrypt'
 sudo apt install certbot python3-certbot-apache
+sudo certbot --apache
 
 echo 'Configure Yii'
 php init --env=Production --overwrite=All
