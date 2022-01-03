@@ -88,6 +88,16 @@ services:
     networks:
       - wkc
 
+  static:
+    build: static
+    ports:
+      - "23080:80"
+    volumes:
+      # Mount static resources folder
+      - ./static:/usr/local/apache2/htdocs/
+    networks:
+      - wkc
+
 networks:
   wkc:
     driver: bridge

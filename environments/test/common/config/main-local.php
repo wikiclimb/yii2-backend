@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'aliases' => [
+        // Host configuration used when launched via default docker-compose.yml
+        '@staticUrl' => 'http://localhost:23080',
+        '@imgUrl' => '@staticUrl/img',
+        '@cssUrl' => '@staticUrl/css',
+        '@jsUrl' => '@staticUrl/js',
+    ],
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
